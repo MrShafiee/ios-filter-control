@@ -116,6 +116,9 @@
     _titlesFont             = SEFilterControl_DEFAULT_TITLE_FONT;
     _titlesColor            = SEFilterControl_DEFAULT_TITLE_COLOR;
     _titlesShadowColor      = SEFilterControl_DEFAULT_TITLE_SHADOW_COLOR;
+    
+    _isTitleUp             = SEFilterControl_TOP_TITLE_POSSITION;
+    _isProcessBarHasShadow = SEFilterControl_HAS_PROCESS_SHADOW;
 
     _continuous             = NO;
 }
@@ -160,7 +163,7 @@
         title = [titles objectAtIndex:i];
         lbl   = [_labels objectAtIndex:i];
 
-        [lbl setFrame:CGRectMake(0, 0, oneSlotSize, 25)];
+        [lbl setFrame:CGRectMake(0, _isTitleUp ? 0 : 70, oneSlotSize, 25)];
         [lbl setLineBreakMode:NSLineBreakByTruncatingMiddle];
         [lbl setAdjustsFontSizeToFitWidth:YES];
         [lbl setMinimumScaleFactor:0.4];
@@ -267,34 +270,35 @@
     
     CGContextSaveGState(context);
     
-    //Draw Black Top Shadow
-    
-    CGContextSetShadowWithColor(context, CGSizeMake(0, 1.f), 2.f, shadowColor);
-    
-    CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:0 green:0
-                                                               blue:0 alpha:.6f].CGColor);
-    CGContextSetLineWidth(context, .5f);
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height - KNOB_WIDTH);
-    CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height - KNOB_WIDTH);
-    CGContextStrokePath(context);
-    
-    CGContextRestoreGState(context);
-    
-    CGContextSaveGState(context);
-    
-    //Draw White Bottom Shadow
-    
-    CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
-                                                               blue:1 alpha:1.f].CGColor);
-    CGContextSetLineWidth(context, .4f);
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height-25);
-    CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height-25);
-    CGContextStrokePath(context);
-    
-    CGContextRestoreGState(context);
-    
+    if(_isProcessBarHasShadow) {
+        //Draw Black Top Shadow
+        
+        CGContextSetShadowWithColor(context, CGSizeMake(0, 1.f), 2.f, shadowColor);
+
+        CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:0 green:0
+                                                                   blue:0 alpha:.6f].CGColor);
+        CGContextSetLineWidth(context, .5f);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height - KNOB_WIDTH);
+        CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height - KNOB_WIDTH);
+        CGContextStrokePath(context);
+
+        CGContextRestoreGState(context);
+
+        CGContextSaveGState(context);
+        
+        //Draw White Bottom Shadow
+        
+        CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
+                                                                   blue:1 alpha:1.f].CGColor);
+        CGContextSetLineWidth(context, .4f);
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, LEFT_OFFSET, rect.size.height-25);
+        CGContextAddLineToPoint(context, rect.size.width-RIGHT_OFFSET, rect.size.height-25);
+        CGContextStrokePath(context);
+        
+        CGContextRestoreGState(context);
+    }
     
     CGPoint centerPoint;
     for (NSInteger i = 0; i < titlesCount; i++) {
@@ -305,43 +309,43 @@
         CGContextSetFillColorWithColor(context, self.progressColor.CGColor);
         
         CGContextFillEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
-        
-        //Draw top Gradient
-        
-        CGFloat colors[12] = {0, 0, 0, 1,
-                              0, 0, 0, 0,
-                              0, 0, 0, 0};
+        if(_isProcessBarHasShadow) {
+            //Draw top Gradient
+            
+            CGFloat colors[12] = {0, 0, 0, 1,
+                                  0, 0, 0, 0,
+                                  0, 0, 0, 0};
 
-        CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
-        CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 3);
-        
-        CGContextSaveGState(context);
-        CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
-        CGContextClip(context);
-        CGContextDrawLinearGradient (context, gradient, CGPointMake(0, 0), CGPointMake(0,rect.size.height), 0);
-        
-        CGGradientRelease(gradient);
-        CGColorSpaceRelease(baseSpace);
-        
-        CGContextRestoreGState(context);
-        
-        //Draw White Bottom Shadow
-        
-        CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
-                                                                   blue:1 alpha:.4f].CGColor);
-        CGContextSetLineWidth(context, .8f);
-        CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.5f,24*M_PI/180,156*M_PI/180,0);
-        CGContextDrawPath(context,kCGPathStroke);
-        
-        //Draw Black Top Shadow
-        
-        CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:0 green:0
-                                                                   blue:0 alpha:.2f].CGColor);
-        
-        CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.f,(i==titlesCount-1?28:-20)*M_PI/180,(i==0?-208:-160)*M_PI/180,1);
-        CGContextSetLineWidth(context, 1.f);
-        CGContextDrawPath(context,kCGPathStroke);
-        
+            CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
+            CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, colors, NULL, 3);
+            
+            CGContextSaveGState(context);
+            CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x-15, rect.size.height-42.5f, 25, 25));
+            CGContextClip(context);
+            CGContextDrawLinearGradient (context, gradient, CGPointMake(0, 0), CGPointMake(0,rect.size.height), 0);
+            
+            CGGradientRelease(gradient);
+            CGColorSpaceRelease(baseSpace);
+            
+            CGContextRestoreGState(context);
+            
+            //Draw White Bottom Shadow
+            
+            CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:1 green:1
+                                                                       blue:1 alpha:.4f].CGColor);
+            CGContextSetLineWidth(context, .8f);
+            CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.5f,24*M_PI/180,156*M_PI/180,0);
+            CGContextDrawPath(context,kCGPathStroke);
+            
+            //Draw Black Top Shadow
+            
+            CGContextSetStrokeColorWithColor(context, [UIColor colorWithRed:0 green:0
+                                                                       blue:0 alpha:.2f].CGColor);
+            
+            CGContextAddArc(context,centerPoint.x-2.5,rect.size.height-30.5f,12.f,(i==titlesCount-1?28:-20)*M_PI/180,(i==0?-208:-160)*M_PI/180,1);
+            CGContextSetLineWidth(context, 1.f);
+            CGContextDrawPath(context,kCGPathStroke);
+        }
     }
 }
 
@@ -355,10 +359,10 @@
         }
 
         if (idx == index) {
-            [label setCenter:CGPointMake(CGRectGetMidX(label.frame), self.frame.size.height-KNOB_HEIGHT-TITLE_SELECTED_DISTANCE)];
+            [label setCenter:CGPointMake(CGRectGetMidX(label.frame), _isTitleUp ? 0 : 70 + self.frame.size.height-KNOB_HEIGHT-TITLE_SELECTED_DISTANCE)];
             [label setAlpha:1];
         }else{
-            [label setCenter:CGPointMake(CGRectGetMidX(label.frame), self.frame.size.height-KNOB_HEIGHT)];
+            [label setCenter:CGPointMake(CGRectGetMidX(label.frame), _isTitleUp ? 0 : 70 + self.frame.size.height-KNOB_HEIGHT)];
             [label setAlpha:TITLE_FADE_ALPHA];
         }
         
@@ -469,7 +473,7 @@
 }
 
 - (CGPoint)centerPointForIndex:(NSInteger)i {
-    return CGPointMake((i/(float)(titlesCount-1)) * (CGRectGetWidth(self.frame)-RIGHT_OFFSET-LEFT_OFFSET) + LEFT_OFFSET, i==_selectedIndex ? CGRectGetHeight(self.frame) - KNOB_HEIGHT - TITLE_SELECTED_DISTANCE:CGRectGetHeight(self.frame) - KNOB_HEIGHT);
+    return CGPointMake((i/(float)(titlesCount-1)) * (CGRectGetWidth(self.frame)-RIGHT_OFFSET-LEFT_OFFSET) + LEFT_OFFSET, i==_selectedIndex ? CGRectGetHeight(self.frame) - KNOB_HEIGHT - TITLE_SELECTED_DISTANCE + (_isTitleUp ? 0 : 70) :CGRectGetHeight(self.frame) - KNOB_HEIGHT + + (_isTitleUp ? 0 : 70));
 }
 
 - (CGPoint)fixFinalPoint:(CGPoint)pnt {
@@ -515,6 +519,19 @@
         [label setFont:font];
 }
 
+- (void) setTitlesUp:(BOOL)isUp{
+    _isTitleUp = isUp;
+    [self updateTitlesToIndex:[self selectedTitleInPoint:_handler.center]
+                     animated:NO];
+}
+
+- (void) setProcessShadow:(BOOL)shadow {
+    _isProcessBarHasShadow = shadow;
+    [self setNeedsLayout];
+}
+
+
+
 #pragma mark - Interface builder
 - (void) setHandlerColor:(UIColor *)handlerColor
 {
@@ -530,5 +547,6 @@
 {
     self.handler.shadowColor = handlerShadowColor;
 }
+
 
 @end

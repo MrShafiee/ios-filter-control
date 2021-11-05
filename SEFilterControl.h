@@ -15,6 +15,9 @@
 
 #define SEFilterControl_HEIGHT                              70
 
+#define SEFilterControl_TOP_TITLE_POSSITION                 YES
+#define SEFilterControl_HAS_PROCESS_SHADOW                  YES
+
 #define SEFilterControl_DEFAULT_TITLE_FONT                  [UIFont fontWithName:@"Optima" size:14]
 #define SEFilterControl_DEFAULT_TITLE_SHADOW_COLOR          [UIColor lightGrayColor]
 #define SEFilterControl_DEFAULT_TITLE_COLOR                 [UIColor blackColor]
@@ -38,7 +41,12 @@ IB_DESIGNABLE
 /* Set selected index, animated or not */
 - (void) setSelectedIndex:(NSUInteger)index animated:(BOOL) animated;
 
+- (void) setTitlesUp:(BOOL)isUp;
+- (void) setProcessShadow:(BOOL)shadow;
+
 @property (nonatomic, strong)           UIFont        *titlesFont UI_APPEARANCE_SELECTOR;               // Update all titles font
+@property (nonatomic, assign)           BOOL isTitleUp;
+@property (nonatomic, assign)           BOOL isProcessBarHasShadow;
 @property (nonatomic, strong)           UIColor       *titlesColor UI_APPEARANCE_SELECTOR;              // Update all titles color
 @property (nonatomic, strong)           UIColor       *titlesShadowColor UI_APPEARANCE_SELECTOR;        // Update all titles shadow color
 @property (nonatomic, strong, readonly) NSArray       *labels;                                          // All titltes array, for a per title customization
